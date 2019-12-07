@@ -1,0 +1,23 @@
+
+{% if request.user.is_authenticated %}
+<form method="POST" action="{% url 'favorite-post' %}">
+		{% csrf_token %}
+		<div class="form-group">
+				{% if is_favorited %}
+				<button id="favorite" class="btn" name="post_id" value="{{ post.id }}" type="submit"> <i class="material-icons">
+					favorite
+					</i></button> 
+				{% else %}
+				<button id="favorite" class="btn" name="post_id" value="{{ post.id }}" type="submit"><i class="material-icons">
+					favorite_border
+					</i> </button>
+				{% endif %}
+		</div>
+</form>
+{% endif %}
+
+
+
+
+
+

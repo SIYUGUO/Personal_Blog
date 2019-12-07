@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% load static %}
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'douban/main.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    {% if title %}
+        <title>Douban - {{ title }}</title>
+    {% else %}
+        <title>Douban </title>
+    {% endif %}
+</head>
+<body>
+    {% include 'douban/navbar.html' %}  
+    <header class="site-header">
+
+    </header>
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-10">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          {% block content %}{% endblock %}
+        </div>
+        <div class="col-md-2">
+          <div class="content-section">
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Optional JavaScript -->
+    <!-- <script type="text/javascript" src="static/main.js"></script> -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function(event){
+        $(document).on('click','#like', function(event){
+          event.preventDefault();
+          var pk = $(this).attr('value');
+          $.ajax({
+            type: 'POST',
+            url: '{% url "like-post" %}',
+            data: {'id':pk, 'csrfmiddlewaretoken': '{{csrf_token}}'},
+            dataType: 'json',
+            success: function(response){
+              $('#like-section').html(response['form'])
+              console.log($('#like-section').html(response['form']));
+            },
+            error: function(rs, e){
+              console.log(rs.responseText);
+            },
+          });
+        });
+      })
+    </script>
+    <script>
+    $(document).ready(function(event){
+      $(document).on('click','#favorite', function(event){
+        event.preventDefault();
+        var pk = $(this).attr('value');
+        $.ajax({
+          type: 'POST',
+          url: '{% url "favorite-post" %}',
+          data: {'id':pk, 'csrfmiddlewaretoken': '{{csrf_token}}'},
+          dataType: 'json',
+          success: function(response){
+            $('#favorite-section').html(response['form'])
+            console.log($('#favorite-section').html(response['form']));
+          },
+          error: function(rs, e){
+            console.log(rs.responseText);
+          },
+        });
+      });
+    });
+  </script>
+  </body>
+</html>

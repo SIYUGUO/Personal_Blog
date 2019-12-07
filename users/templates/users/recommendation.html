@@ -1,0 +1,49 @@
+{% extends "douban/base.html" %}
+{% block content %}
+	<h2 class="mb-3">{{ view.kwargs.username }} Check out these Posts!</h2>
+	{% for post in posts %}
+	<article class="media content-section">
+			<img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
+			<div class="media-body">
+			  <div class="article-metadata">
+				<a class="mr-2">{{ post.author }}</a>
+				<small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+			  </div>
+			  <h4><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h4>
+			  <p class="article-content">{{ post.content|safe|truncatewords:"50"|linebreaks }}</p>
+  
+			  <div class="button_container">
+				<div class="button">
+				  <div id="like-section">
+					  Liked:{{ post.likes.count }}              
+				  </div>
+				</div>
+  
+				<div class="button">
+				  <div id="like-section">
+					  Favorited:{{ post.favorites.count }}              
+				  </div>
+				</div>
+  
+				<div class="button">
+				  <div id="favorite-section">
+					{% if request.user.is_authenticated %}
+					  {% if request.user in post.favorites.all %}
+						Favorited             
+					  {% endif %}
+					{% endif %}  
+				  </div>
+				</div>
+  
+				<div class="button">
+				  {% for tag in r_favorites.tags.all %}
+					<a href="#" class="badge badge-secondary" >{{ tag }}</a>	
+				  {% endfor %}
+				</div>
+  
+			  </div>
+			</div>
+		  </article>
+		{% endfor %}
+    {% include 'douban/paginator.html' %}  
+{% endblock content %}
