@@ -1,0 +1,48 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+  <div class="container">
+    <a class="navbar-brand mr-4" href="{% url 'douban-home' %}">Douban.com</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarToggle">
+
+        <div class="md-form my-0">
+          <form class="form-inline" action="{% url 'search-result' %}" method="get" onsubmit="return parse_q()">
+            <input name='q' id='q' class="form-control" type="text" placeholder="Search" aria-label="Search">
+          </form> 
+        </div>
+
+        <script>
+        stopwords = ['like','i','me','my','myself','we','our','ours','ourselves','you','your','yours','yourself','yourselves','he','him','his','himself','she','her','hers','herself','it','its','itself','they','them','their','theirs','themselves','what','which','who','whom','this','that','these','those','am','is','are','was','were','be','been','being','have','has','had','having','do','does','did','doing','a','an','the','and','but','if','or','because','as','until','while','of','at','by','for','with','about','against','between','into','through','during','before','after','above','below','to','from','up','down','in','out','on','off','over','under','again','further','then','once','here','there','when','where','why','how','all','any','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','s','t','can','will','just','don','should','now']
+        function parse_q() {
+            res = []
+            words = document.getElementById('q').value.split(' ')
+  
+            for(i=0;i<words.length;i++) {
+                if(!stopwords.includes(words[i])) {
+                    res.push(words[i])
+                }
+            }
+            res.join(' ')
+            document.getElementById('q').value = res;
+            console.log(document.getElementById('q').value)
+            return true;
+        }
+        </script>
+
+      <!-- Navbar Right Side -->
+      <div class="navbar-nav ml-auto">
+        {% if user.is_authenticated %}
+          <a class="nav-item nav-link" href="{% url 'post-create' %}">New Post</a>
+          <a class="nav-item nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+          <a class="nav-item nav-link" href="{% url 'recommendation' %}">Recommendation</a>          
+          <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+          <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+        {% else %}
+          <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+          <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,32 @@
+{% extends "douban/base.html" %}
+{% block content %}
+	<h1 class="mb-3">{{ view.kwargs.username }} Dashboard</h1>
+	<h3>Personal Posted</h3>		
+	{% for post in posts %}
+		{% if request.user == post.author %}
+		<div class="article-metadata">
+			<p><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}<small class="text-muted">                     {{ post.date_posted|date:"F d, Y" }}</small></a></p>
+		</div>
+			{% endif %}
+	{% endfor %}
+
+	<h3>Liked</h3>		
+	{% for post in posts %}
+		{% if request.user in post.likes.all %}
+		<div class="article-metadata">
+			<p><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}<small class="text-muted">                     {{ post.date_posted|date:"F d, Y" }}</small></a></p>
+		</div>
+			{% endif %}
+	{% endfor %}
+
+	<h3>Favorited</h3>		
+	{% for post in posts %}
+		{% if request.user in post.favorites.all %}
+		<div class="article-metadata">
+			<p><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}<small class="text-muted">                      {{ post.date_posted|date:"F d, Y" }}</small></a></p>
+		</div>
+			{% endif %}
+	{% endfor %}
+
+    {% include 'douban/paginator.html' %}  
+{% endblock content %}

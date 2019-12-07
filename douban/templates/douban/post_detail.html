@@ -1,0 +1,85 @@
+{% extends "douban/base.html" %}
+{% block content %}
+	<article class="media content-section">
+		<img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+		<div class="media-body" display="inline-block">
+			<div class="article-metadata">
+				<a class="mr-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+				<small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+				{% if object.author == user %}
+					<a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
+					<a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
+				{% endif %}
+			</div>
+			<h2 class="article-title">{{ object.title }}</h2>
+			<p class="article-content">{{ object.content }}</p>
+
+				<div class="button">
+					<div id="like-section">
+						{% include 'douban/like_section.html' %}
+					</div>
+				</div>
+
+				<div class="button">
+					<div id="favorite-section">
+						{% include 'douban/favorite_section.html' %}
+					</div>
+				</div>
+
+				<div class="button">
+					{% for tag in post.tags.all %}
+						<a href="#" class="badge badge-secondary" >{{ tag }}</a>	
+					{% endfor %}
+					<a class="mt-1 mb-1" href="{% url 'tag-update' object.id %}">Edit</a>
+				</div>
+
+			</div>
+		</div>
+	</article>
+
+	   
+	<script>
+			$(document).ready(function(event){
+	
+				$(document).on('click','#like', function(event){
+					event.preventDefault();
+					var pk = $(this).attr('value');
+					$.ajax({
+						type: 'POST',
+						url: '{% url "like-post" %}',
+						data: {'id':pk, 'csrfmiddlewaretoken': '{{csrf_token}}'},
+						dataType: 'json',
+						success: function(response){
+							$('#like-section').html(response['form'])
+							console.log($('#like-section').html(response['form']));
+						},
+						error: function(rs, e){
+							console.log(rs.responseText);
+						},
+					});
+				});
+			});
+		</script>
+			<script>
+			$(document).ready(function(event){
+	
+				$(document).on('click','#favorite', function(event){
+					event.preventDefault();
+					var pk = $(this).attr('value');
+					$.ajax({
+						type: 'POST',
+						url: '{% url "favorite-post" %}',
+						data: {'id':pk, 'csrfmiddlewaretoken': '{{csrf_token}}'},
+						dataType: 'json',
+						success: function(response){
+							$('#favorite-section').html(response['form'])
+							console.log($('#favorite-section').html(response['form']));
+						},
+						error: function(rs, e){
+							console.log(rs.responseText);
+						},
+					});
+				});
+			});
+		</script>
+{% endblock content %}
