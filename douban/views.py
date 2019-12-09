@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q 
 from django.template.loader import render_to_string
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from users.models import Profile
 from django.http import HttpResponseRedirect
+
 # from django.contrib.postgres.search import (
 #     SearchVector, SearchQuery, SearchRank
 # )
@@ -103,21 +104,7 @@ class UserPostListView(ListView):
 
 
 class PostDetailView(DetailView):
-    mode = Post
-
-    def get_queryset(self):
-        return Post.objects.order_by('-date_posted')
-        
-    def get_context_data(self, **kwargs):
-        context = super(PostDetailView, self).get_context_data(**kwargs)
-        is_liked = False
-        _id = self.object.id
-        post = Post.objects.filter(id=_id).get()
-        user_id = self.request.user.id
-        if post.likes.filter(id=user_id).exists():
-            is_liked = True
-        context['is_liked'] = is_liked
-        return context
+    model = Post
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -161,38 +148,40 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 @login_required
 def like_post(request):
-    # _id = request.POST.get('post_id')
-    _id = request.POST.get('id')
-    post = get_object_or_404(Post, id=_id)
+    id_ = request.POST.get('post_id')
+    post = get_object_or_404(Post, id=id_)
     is_liked = False
-    user_id = request.user.id 
-    if post.likes.filter(id=user_id).exists():
-        post.likes.remove(request.user)
+    user = request.user 
+    if user in post.likes.all():
+        post.likes.remove(user)
         is_liked = False
+
     else:
-        post.likes.add(request.user)
+        post.likes.add(user)
         is_liked = True
     context = {
         'post':post,
+        'is_liked':is_liked,
     }
-    # if request.is_ajax():
-    #     html = render_to_string('douban/like_section.html', context, request=request)
-    return HttpResponseRedirect(request.path_info)
+    if request.is_ajax():
+        html = render_to_string('douban/like_section.html', context, request=request)
+        return JsonResponse({'form':html})
 
 @login_required
 def favorite_post(request):
-    # _id = request.POST.get('post_id')
-    _id = request.POST.get('id')
-    post = get_object_or_404(Post, id=_id)
-    user_id = request.user.id 
+    id_ = request.POST.get('post_id')
+    post = get_object_or_404(Post, id=id_)
     is_favorited = False
-    if post.favorites.filter(id=user_id).exists():
-        post.favorites.remove(request.user)
+    user = request.user 
+    if user in post.favorites.all():
+        post.favorites.remove(user)
         is_favorited = False
+
     else:
-        post.favorites.add(request.user)
+        post.favorites.add(user)
         is_favorited = True
     context = {
+        'post':post,
         'is_favorited':is_favorited,
     }
     if request.is_ajax():

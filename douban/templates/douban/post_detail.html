@@ -13,7 +13,6 @@
 			</div>
 			<h2 class="article-title">{{ object.title }}</h2>
 			<p class="article-content">{{ object.content }}</p>
-
 				<div class="button">
 					<div id="like-section">
 						{% include 'douban/like_section.html' %}
@@ -27,59 +26,12 @@
 				</div>
 
 				<div class="button">
-					{% for tag in post.tags.all %}
-						<a href="#" class="badge badge-secondary" >{{ tag }}</a>	
-					{% endfor %}
-					<a class="mt-1 mb-1" href="{% url 'tag-update' object.id %}">Edit</a>
+						{% for tag in post.tags.all %}
+							<a href="#" class="badge badge-secondary" >{{ tag }}</a>	
+						{% endfor %}
+						<a class="mt-1 mb-1" href="{% url 'tag-update' object.id %}">Edit</a>
 				</div>
-
 			</div>
 		</div>
 	</article>
-
-	   
-	<script>
-			$(document).ready(function(event){
-	
-				$(document).on('click','#like', function(event){
-					event.preventDefault();
-					var pk = $(this).attr('value');
-					$.ajax({
-						type: 'POST',
-						url: '{% url "like-post" %}',
-						data: {'id':pk, 'csrfmiddlewaretoken': '{{csrf_token}}'},
-						dataType: 'json',
-						success: function(response){
-							$('#like-section').html(response['form'])
-							console.log($('#like-section').html(response['form']));
-						},
-						error: function(rs, e){
-							console.log(rs.responseText);
-						},
-					});
-				});
-			});
-		</script>
-			<script>
-			$(document).ready(function(event){
-	
-				$(document).on('click','#favorite', function(event){
-					event.preventDefault();
-					var pk = $(this).attr('value');
-					$.ajax({
-						type: 'POST',
-						url: '{% url "favorite-post" %}',
-						data: {'id':pk, 'csrfmiddlewaretoken': '{{csrf_token}}'},
-						dataType: 'json',
-						success: function(response){
-							$('#favorite-section').html(response['form'])
-							console.log($('#favorite-section').html(response['form']));
-						},
-						error: function(rs, e){
-							console.log(rs.responseText);
-						},
-					});
-				});
-			});
-		</script>
 {% endblock content %}
